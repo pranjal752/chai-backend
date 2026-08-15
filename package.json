@@ -2,11 +2,15 @@
   "name": "backendbyhitesh",
   "version": "1.0.0",
   "description": "backend with javascript",
+  "type": "module",
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
+  "type1": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodeman src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
