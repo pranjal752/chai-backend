@@ -1,7 +1,7 @@
-import mongoose from "mangoose";
+import mongoose from "mongoose";
 import { DB_NAME } from "../constraints.js";
-
-
+import dotenv from "dotenv";
+dotenv.config();
 
 const connectDB = async () => {
     try{
@@ -10,7 +10,7 @@ const connectDB = async () => {
          ${connectionInstance.connection.host}`)
     }catch (error){
         console.log("MONGODB connection error ", error);
-        process.exist(1)
+        process.exit(1)
     }
 }
 
