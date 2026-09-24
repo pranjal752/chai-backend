@@ -23,7 +23,7 @@ const generateAccessAndReferenceTokens = async(userID) => {
     
   }
 
-const registerUser = asyncHandler(async (req, res) => { ....
+const registerUser = asyncHandler(async (req, res) => { 
 })
 
 const loginUser = asyncHandler(async (req, res) => { 
@@ -39,7 +39,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const {username, email, password} = req.body
 
     if(!username && !email) {
-      throw new ApiError(400, "username or email is required"
+      throw new ApiError(400, "username or email is required")
       }
 
       const user = await User.findOne({
@@ -55,6 +55,7 @@ const loginUser = asyncHandler(async (req, res) => {
       await user.isPasswordCorrect(password)
       if (!isPasswordValid) {
         throw new ApiError(404, "Invalid user credentials")
+      }
 
       // access and refresh token 
 
@@ -86,7 +87,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
-const logoutUser = asyncHandler(async(req, res) => {
+const logOutUser = asyncHandler(async(req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -168,11 +169,12 @@ const changeCurrentPassword = asyncHandler(async(req, res) => {
     throw new ApiError(400, "Invalid old password")
   }
 
-  user.password = newPassworduser.save{validateBeforeSave: false}
+  user.password = NewPasswordUser.Save({validateBeforeSave:  false})
+    
 
   return res
   .status(200)
-  .json(new ApiResponse(200, {} , "Password change Successfull")
+  .json(new ApiResponse(200, {} , "Password change Successfull"))
 })
 
 const getCurrentUser = asyncHandler(async(req, res) =>  {
@@ -204,12 +206,12 @@ const updateAccountDetails = asyncHandler(async(req, res) => {
   .json(new ApiResponse(200, user, "Account details updated successfully"))
 })
 
-const updateUserAvatar = asyncHandler(asserts(req, res) => {
+const updateUserAvatar = asyncHandler(async(req, res) => {
   const avatarLocalPath = req.file?.path
 
   if(!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is missing")
-  }
+}
 
   const avatar = await uploadOnCloudinary (avatarLocalPath)
   if (!avatar.url){
@@ -234,7 +236,7 @@ const updateUserAvatar = asyncHandler(asserts(req, res) => {
 
 })
 
-const updateUserCoverImage = asyncHandler(asserts(req, res) => {
+const updateUserCoverImage = asyncHandler(async(req, res) => {
   const coverImageLocalPath = req.file?.path
 
   if(!coverImageLocalPath) {
@@ -334,6 +336,63 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
   )
 })
 
+
+const getWatchHistory = asyncHandler(async(req, res) => {
+  const user = await User.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(req.user._id)
+      }
+    },
+    {
+      $lookup: {
+        from: "Videos",
+        localField: "watchHistory",
+        foreignField: "_id",
+        as: "watchHistory",
+        pipeline: [
+          {
+            $lookup: {
+              from: "users",
+              localField: "owner",
+              foreignField: "_id",
+              as: "owner",
+              pipeline: [
+                {
+                  $project: {
+                    fullName: 1,
+                    userName: 1,
+                    avatar: 1
+                  }
+                }
+              ]
+            }
+          }, 
+              {
+                $addFields: {
+                  owner: {
+                    $first: "$owner"
+                  }
+                }``
+              }
+            ]
+            }
+          }
+  
+  ])
+   
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(
+      200,
+      user[0].watchHistory,
+      "Watch history fetched Successfully"
+    )
+  )
+
+})
+
 export {
   registerUser,
   loginUser,
@@ -343,7 +402,8 @@ export {
   getCurrentUser,
   updateAccountDetails,
   updateUserCoverImage,
-  getUserChannelProfile
+  getUserChannelProfile,
+  getWatchHistory
 }
 
 
@@ -368,8 +428,8 @@ export {
     //   throw new ApiError(400, "fullname is required")
     //  } (or)
 
-   if(!userName && !email){
-    throw new ApiError(400, "username or email is required")
+   if(!UserName && !email){
+    throw new ApiError(400, "Username or email is required")
    }
 
     const User = await User.findOne({
@@ -422,7 +482,7 @@ export {
     new ApiResponse(200, createdUser, "User registered successfully")
    )
 
-  })
+  }
 
 
 export {registerUser}
