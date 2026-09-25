@@ -373,7 +373,7 @@ const getWatchHistory = asyncHandler(async(req, res) => {
                   owner: {
                     $first: "$owner"
                   }
-                }``
+                }
               }
             ]
             }
@@ -485,4 +485,4 @@ export {
   }
 
 
-export {registerUser}
+ export {registerUser}
